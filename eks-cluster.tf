@@ -5,8 +5,8 @@
 #  * EKS Cluster
 #
 
-resource "aws_iam_role" "UNZER-cluster" {
-  name = "terraform-eks-UNZER-cluster"
+resource "aws_iam_role" "unzer-cluster" {
+  name = "terraform-eks-unzer-cluster"
 
   assume_role_policy = <<POLICY
 {
@@ -24,20 +24,20 @@ resource "aws_iam_role" "UNZER-cluster" {
 POLICY
 }
 
-resource "aws_iam_role_policy_attachment" "UNZER-cluster-AmazonEKSClusterPolicy" {
+resource "aws_iam_role_policy_attachment" "unzer-cluster-AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.UNZER-cluster.name
+  role       = aws_iam_role.unzer-cluster.name
 }
 
-resource "aws_iam_role_policy_attachment" "UNZER-cluster-AmazonEKSServicePolicy" {
+resource "aws_iam_role_policy_attachment" "unzer-cluster-AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = aws_iam_role.UNZER-cluster.name
+  role       = aws_iam_role.unzer-cluster.name
 }
 
-resource "aws_security_group" "UNZER-cluster" {
-  name        = "terraform-eks-UNZER-cluster"
+resource "aws_security_group" "unzer-cluster" {
+  name        = "terraform-eks-unzer-cluster"
   description = "Cluster communication with worker nodes"
-  vpc_id      = aws_vpc.UNZER.id
+  vpc_id      = aws_vpc.unzer.id
 
   egress {
     from_port   = 0
@@ -47,31 +47,31 @@ resource "aws_security_group" "UNZER-cluster" {
   }
 
   tags = {
-    Name = "terraform-eks-UNZER"
+    Name = "terraform-eks-unzer"
   }
 }
 
-resource "aws_security_group_rule" "UNZER-cluster-ingress-workstation-https" {
+resource "aws_security_group_rule" "unzer-cluster-ingress-workstation-https" {
   cidr_blocks       = [local.workstation-external-cidr]
   description       = "Allow workstation to communicate with the cluster API Server"
   from_port         = 443
   protocol          = "tcp"
-  security_group_id = aws_security_group.UNZER-cluster.id
+  security_group_id = aws_security_group.unzer-cluster.id
   to_port           = 443
   type              = "ingress"
 }
 
-resource "aws_eks_cluster" "UNZER" {
+resource "aws_eks_cluster" "unzer" {
   name     = var.cluster-name
-  role_arn = aws_iam_role.UNZER-cluster.arn
+  role_arn = aws_iam_role.unzer-cluster.arn
 
   vpc_config {
-    security_group_ids = [aws_security_group.UNZER-cluster.id]
-    subnet_ids         = aws_subnet.UNZER[*].id
+    security_group_ids = [aws_security_group.unzer-cluster.id]
+    subnet_ids         = aws_subnet.unzer[*].id
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.UNZER-cluster-AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.UNZER-cluster-AmazonEKSServicePolicy,
+    aws_iam_role_policy_attachment.unzer-cluster-AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.unzer-cluster-AmazonEKSServicePolicy,
   ]
 }

@@ -1,4 +1,4 @@
-# EKS Getting Started Guide Configuration1
+# EKS Getting Started Guide Configuration
 
 This is the full configuration from https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html
 
